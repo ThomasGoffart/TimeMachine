@@ -1,0 +1,15 @@
+services:
+    NorthernIndustry\TimeMachineBundle\EventListener\DatabaseSubscriber:
+        arguments: [ '@security.helper' ]
+        tags:
+            - { name: 'doctrine.event_subscriber' }
+
+    NorthernIndustry\TimeMachineBundle\Routing\RoutingAnnotationLoader:
+        arguments: [ '@routing.loader.annotation' ]
+        tags: [ routing.loader ]
+
+    NorthernIndustry\TimeMachineBundle\Controller\HomeController:
+        arguments: [ '@twig' ]
+        calls:
+            - { method: setContainer, arguments: [ '@service_container' ] }
+        tags: [ 'controller.service_arguments' ]

@@ -1,0 +1,3 @@
+time_machine:
+    resource: '@TimeMachineBundle/Controller/'
+    type: time_machine
