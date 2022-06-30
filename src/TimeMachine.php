@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use NorthernIndustry\TimeMachineBundle\Entity\Change;
+use NorthernIndustry\TimeMachineBundle\Data\EntityData;
 use NorthernIndustry\TimeMachineBundle\Repository\HistoryRepository;
 
 class TimeMachine {
@@ -40,52 +41,35 @@ class TimeMachine {
 			'identifier' => $id
 		]);
 
-		//		/** @var Collection<int, Change> $changes */
-		//		$changes = new ArrayCollection();
-		//
-		//		foreach ($histories as $history) {
-		//			foreach ($history->getChanges() as $change) {
-		//				$changes->add($change);
-		//			}
-		//		}
+		$data = EntityData::find($entity);
 
-		//		foreach ($changes as $index => $change) {
-		//			$array = new ArrayCollection($changes->slice($index + 1));
-		//
-		//			/** @var ?Change $hasAfter */
-		//			$hasAfter = $array->filter(fn(Change $c) => $c->getProperty() === $change->getProperty())->first() ?: null;
-		//
-		//			if ($hasAfter) {
-		//				$after = $hasAfter->getBefore();
-		//			} else {
-		//				$method = 'get' . ucfirst($change->getProperty());
-		//
-		//				$after = $entity->$method();
-		//			}
-		//
-		//			$columnType = $this->getColumnType($entity, $change->getProperty());
-		//
-		//			if ($columnType) {
-		//				$change->setType($columnType);
-		//			}
-		//
-		//			$change->setAfter($after);
-		//			$change->setAfterReadable($this->getHumanReadable($after, $columnType));
-		//			$change->setBeforeReadable($this->getHumanReadable($change->getBefore(), $columnType));
-		//		}
+		/** @var Collection<int, Change> $changes */
+		$changes = new ArrayCollection();
+
+		foreach ($histories as $history) {
+			foreach ($history->getChanges() as $change) {
+				$changes->add($change);
+			}
+		}
+
+		foreach ($changes as $index => $change) {
+			$array = new ArrayCollection($changes->slice($index + 1));
+
+			/** @var ?Change $hasAfter */
+			$hasAfter = $array->filter(fn(Change $c) => $c->getProperty() === $change->getProperty())->first() ?: null;
+
+			if ($hasAfter) {
+				$after = $hasAfter->getBefore();
+			} else {
+				$after = $data->getProperty($change->getProperty())?->getValue();
+			}
+
+			$change->setType($data->getProperty($change->getProperty())?->getType());
+			$change->setAfter($after);
+		}
 
 		return new ArrayCollection($histories);
 	}
-
-	//	private function getColumnType(object $entity, string $property): ?string {
-	//		try {
-	//			$reflection = new ReflectionClass($entity);
-	//
-	//			return $reflection->getProperty($property)->getAttributes(Column::class)[0]->getArguments()['type'];
-	//		} catch (Exception) {
-	//			return null;
-	//		}
-	//	}
 
 	/**
 	 * @template T
@@ -113,17 +97,17 @@ class TimeMachine {
 				       j1.created_at AS starts_at,
 				       h1.created_at AS ends_at
 				
-				FROM `change` c1
+				FROM `time_machine_change` c1
 				
-				INNER JOIN `history` h1
+				INNER JOIN `time_machine_history` h1
 				ON h1.id = c1.history_id
 				
 				LEFT JOIN (
 				
 					SELECT c.id, c.property, h.created_at
-					FROM `change` c
+					FROM `time_machine_change` c
 					
-					INNER JOIN `history` h
+					INNER JOIN `time_machine_history` h
 					ON h.id = c.history_id
 					
 					GROUP BY c.id

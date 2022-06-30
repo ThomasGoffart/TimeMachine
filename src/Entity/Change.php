@@ -7,7 +7,7 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use NorthernIndustry\TimeMachineBundle\Repository\ChangeRepository;
 
-#[ORM\Table(name: 'time_change')]
+#[ORM\Table(name: 'time_machine_change')]
 #[ORM\Entity(repositoryClass: ChangeRepository::class)]
 class Change {
 
@@ -26,11 +26,7 @@ class Change {
 	#[ORM\Column(name: 'value', type: 'text', nullable: true)]
 	private string $before;
 
-	private ?string $beforeReadable = null;
-
 	private string $after;
-
-	private ?string $afterReadable = null;
 
 	private ?string $type = null;
 
@@ -72,18 +68,8 @@ class Change {
 		return $this;
 	}
 
-	public function getBeforeReadable(): ?string {
-		return $this->beforeReadable;
-	}
-
-	public function setBeforeReadable(string $beforeReadable): self {
-		$this->beforeReadable = $beforeReadable;
-
-		return $this;
-	}
-
 	public function getAfter(): mixed {
-		return unserialize($this->after, ['allowed_classes' => false]);
+		return unserialize($this->after, ['allowed_classes' => true]);
 	}
 
 	public function setAfter(mixed $after): self {
@@ -92,21 +78,11 @@ class Change {
 		return $this;
 	}
 
-	public function getAfterReadable(): ?string {
-		return $this->afterReadable;
-	}
-
-	public function setAfterReadable(string $afterReadable): self {
-		$this->afterReadable = $afterReadable;
-
-		return $this;
-	}
-
 	public function getType(): ?string {
 		return $this->type;
 	}
 
-	public function setType(string $type): self {
+	public function setType(?string $type): self {
 		$this->type = $type;
 
 		return $this;

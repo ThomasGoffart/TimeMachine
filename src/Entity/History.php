@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use NorthernIndustry\TimeMachineBundle\Repository\HistoryRepository;
 
-#[ORM\Table(name: 'time_history')]
+#[ORM\Table(name: 'time_machine_history')]
 #[ORM\Entity(repositoryClass: HistoryRepository::class)]
 class History {
 
@@ -25,8 +25,8 @@ class History {
 	#[ORM\Column(type: 'integer')]
 	private int $identifier;
 
-	#[ORM\ManyToOne(targetEntity: UserInterface::class)]
-	private ?UserInterface $createdBy;
+	#[ORM\Column(type: 'string', length: 255, nullable: true)]
+	private mixed $user;
 
 	#[ORM\Column(type: 'datetime_immutable')]
 	private DateTimeImmutable $createdAt;
@@ -62,12 +62,12 @@ class History {
 		return $this;
 	}
 
-	public function getCreatedBy(): ?UserInterface {
-		return $this->createdBy;
+	public function getUser(): mixed {
+		return $this->user;
 	}
 
-	public function setCreatedBy(?UserInterface $createdBy): self {
-		$this->createdBy = $createdBy;
+	public function setUser(mixed $user): self {
+		$this->user = $user;
 
 		return $this;
 	}
@@ -106,4 +106,5 @@ class History {
 
 		return $this;
 	}
+
 }

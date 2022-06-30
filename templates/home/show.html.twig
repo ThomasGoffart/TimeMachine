@@ -1,0 +1,24 @@
+{% extends '@TimeMachine/base.html.twig' %}
+
+{% block body %}
+	<h1 class="display-6">{{ entity }}</h1>
+
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				{% for property in data.properties %}
+					<th>{{ property.name | humanize | trans }}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for entry in entries %}
+				<tr>
+					{% for property in data.properties %}
+						<td>{{ attribute(entry, property.name) | readable(property.type) | raw }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

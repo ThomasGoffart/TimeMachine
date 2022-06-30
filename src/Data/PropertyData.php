@@ -4,30 +4,25 @@ namespace NorthernIndustry\TimeMachineBundle\Data;
 
 
 use ReflectionProperty;
-use Doctrine\ORM\Mapping\Column;
 
 class PropertyData {
 
 	private string $name;
 
-	private ?string $type = null;
-
-	public function __construct(private readonly ReflectionProperty $reflectionProperty) {
+	public function __construct(private readonly ReflectionProperty $reflectionProperty, private readonly object $entity, private readonly string $type) {
 		$this->name = $this->reflectionProperty->getName();
-
-		$columnAttribute = $this->reflectionProperty->getAttributes(Column::class);
-
-		if (count($columnAttribute) === 1) {
-			$this->type = $columnAttribute[0]->getArguments()['type'];
-		}
 	}
 
 	public function getName(): string {
 		return $this->name;
 	}
 
-	public function getType(): ?string {
+	public function getType(): string {
 		return $this->type;
+	}
+
+	public function getValue(): mixed {
+		return $this->reflectionProperty->getValue($this->entity);
 	}
 
 }

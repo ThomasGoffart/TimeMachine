@@ -9,7 +9,31 @@ services:
         tags: [ routing.loader ]
 
     NorthernIndustry\TimeMachineBundle\Controller\HomeController:
-        arguments: [ '@twig' ]
+        arguments: [ '@twig', '@parameter_bag' ]
         calls:
             - { method: setContainer, arguments: [ '@service_container' ] }
         tags: [ 'controller.service_arguments' ]
+
+    NorthernIndustry\TimeMachineBundle\TimeMachine:
+        class: 'NorthernIndustry\TimeMachineBundle\TimeMachine'
+        arguments: [ '@doctrine.orm.entity_manager', '@time_machine.history_repository' ]
+
+    time_machine.history_repository:
+        class: 'NorthernIndustry\TimeMachineBundle\Repository\HistoryRepository'
+        arguments: [ '@Doctrine\Persistence\ManagerRegistry' ]
+
+    NorthernIndustry\TimeMachineBundle\Twig\DateExtension:
+        class: 'NorthernIndustry\TimeMachineBundle\Twig\DateExtension'
+        arguments: [ '@time_machine.date_service' ]
+        tags:
+            - { name: 'twig.extension' }
+
+    NorthernIndustry\TimeMachineBundle\Twig\ObjectExtension:
+        class: 'NorthernIndustry\TimeMachineBundle\Twig\ObjectExtension'
+        arguments: [ '@time_machine.date_service', '@translator' ]
+        tags:
+            - { name: 'twig.extension' }
+
+    time_machine.date_service:
+        class: 'NorthernIndustry\TimeMachineBundle\Service\DateService'
+        arguments: [ '@request_stack' ]

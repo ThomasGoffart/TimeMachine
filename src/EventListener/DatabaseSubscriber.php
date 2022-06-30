@@ -5,7 +5,6 @@ namespace NorthernIndustry\TimeMachineBundle\EventListener;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Events;
-use App\Entity\User\User;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -81,8 +80,8 @@ class DatabaseSubscriber implements EventSubscriberInterface {
 
 		$user = $this->security->getUser();
 
-		if ($user) {
-			$history->setCreatedBy($user);
+		if ($user && method_exists($user, 'getId')) {
+			$history->setUser($user->getId());
 		}
 
 		$ignoredColumns = $this->getIgnoredColumns();
@@ -120,7 +119,6 @@ class DatabaseSubscriber implements EventSubscriberInterface {
 			$hasCreatedBy = method_exists($object, 'getCreatedBy') && method_exists($object, 'setCreatedBy');
 			$hasCreatedAt = method_exists($object, 'getCreatedAt') && method_exists($object, 'setCreatedAt');
 
-			/** @var User $user */
 			$user = $this->security->getUser();
 
 			if ($hasCreatedBy) {

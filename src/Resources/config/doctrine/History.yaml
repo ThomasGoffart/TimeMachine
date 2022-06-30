@@ -1,0 +1,18 @@
+NorthernIndustry\TimeMachineBundle\Entity\History:
+    type: entity
+    repositoryClass: NorthernIndustry\TimeMachineBundle\Entity\HistoryRepository
+    table: time_machine_history
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        entity:
+            type: string
+            length: 255
+        identifier:
+            type: integer
+    manyToOne:
+        createdBy:
+            targetEntity: Symfony\Component\Security\Core\User\UserInterface
