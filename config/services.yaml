@@ -6,12 +6,12 @@ services:
 
     NorthernIndustry\TimeMachineBundle\Routing\RoutingAnnotationLoader:
         arguments: [ '@routing.loader.annotation' ]
-        tags: [ routing.loader ]
+        tags: [ 'routing.loader' ]
 
     NorthernIndustry\TimeMachineBundle\Controller\HomeController:
         arguments: [ '@twig', '@parameter_bag' ]
         calls:
-            - { method: setContainer, arguments: [ '@service_container' ] }
+            - { method: 'setContainer', arguments: [ '@service_container' ] }
         tags: [ 'controller.service_arguments' ]
 
     NorthernIndustry\TimeMachineBundle\TimeMachine:
@@ -37,3 +37,9 @@ services:
     time_machine.date_service:
         class: 'NorthernIndustry\TimeMachineBundle\Service\DateService'
         arguments: [ '@request_stack' ]
+
+    NorthernIndustry\TimeMachineBundle\EventListener\AdminRequestListener:
+        class: 'NorthernIndustry\TimeMachineBundle\EventListener\AdminRequestListener'
+        arguments: [ '@security.helper' ]
+        tags:
+            - { name: 'kernel.event_subscriber' }

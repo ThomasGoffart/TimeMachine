@@ -26,7 +26,7 @@ class TimeMachine {
 	 *
 	 * @return Collection<int, T>
 	 */
-	public function getHistories(mixed $class, int $id = null): Collection {
+	public function getHistories(mixed $class, mixed $id = null): Collection {
 		if (is_string($class)) {
 			$entity = $this->entityManager->getRepository($class)->find($id);
 		} else {

@@ -1,31 +1,32 @@
 {% extends '@TimeMachine/base.html.twig' %}
 
 {% block body %}
+	{% include '@TimeMachine/partials/navigation.html.twig' %}
+
 	<form class="row g-3">
-		<div class="col-md-4 offset-md-2">
+		<div class="col-md-5">
 			<input type="date" name="date" class="form-control" value="{{ dateTime | date('Y-m-d') }}">
 		</div>
-		<div class="col-md-4">
+		<div class="col-md-5">
 			<input type="time" name="time" class="form-control" value="{{ dateTime | date('H:i:s') }}" step="1">
 		</div>
 		<div class="col-md-2">
-			<button type="submit" class="btn btn-success w-100">Submit</button>
+			<button type="submit" class="btn btn-success w-100">
+				<i class="fa-solid fa-fw fa-magnifying-glass"></i>
+			</button>
 		</div>
-		<div class="col-md-8 offset-md-2">
+		<div class="col-md-12">
 			{% if isBeforeCreation %}
-				<div class="alert alert-warning">
-					<p>This entry does not exist yet.</p>
-					<a href="{{ url('time_machine_state', {
-						entity: app.request.attributes.get('entity'),
-						id: app.request.attributes.get('id'),
-						date: user.createdAt | date('Y-m-d'),
-						time: user.createdAt | date('H:i:s')
-					}) }}" class="link-warning">
-						<span>Go to creation date</span>
-					</a>
-				</div>
+				<div class="alert alert-warning">This entry does not exist yet.</div>
 			{% else %}
-				<table class="table table-bordered">
+				<table class="table border">
+					<thead>
+						<tr>
+							<td colspan="2" class="bg-light text-center">
+								<b>{{ dateTime | format_datetime | capitalize }}</b>
+							</td>
+						</tr>
+					</thead>
 					<tbody>
 						{% for property in data.properties %}
 							<tr>

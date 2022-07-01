@@ -1,0 +1,12 @@
+<div class="d-flex align-items-center justify-content-between">
+	<div class="d-flex align-items-baseline">
+		<h1 class="display-6 me-2">{{ entity }}</h1>
+		<small>({{ id }})</small>
+	</div>
+	<a href="{{ url('time_machine_show', { entity: entity }) }}" class="btn btn-sm btn-primary">
+		<i class="fa-solid fa-arrow-left me-2"></i>
+		<span>{{ 'Back' | trans }}</span>
+	</a>
+</div>
+
+<hr>

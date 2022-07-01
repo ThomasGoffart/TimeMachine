@@ -25,13 +25,19 @@ class HomeController extends AbstractController {
 	}
 
 	#[Route('/time', name: 'time_machine_index', methods: ['GET'])]
-	public function index(): Response {
+	public function index(EntityManagerInterface $entityManager): Response {
 		$configuration = $this->containerBag->get('time_machine.configuration');
 
 		$entities = $configuration['entities'];
+		$counts = [];
+
+		foreach ($entities as $entity) {
+			$counts[$entity] = $entityManager->getRepository($entity)->count([]);
+		}
 
 		return new Response($this->twig->render('@TimeMachine/home/index.html.twig', [
-			'entities' => $entities
+			'entities' => $entities,
+			'counts'   => $counts
 		]));
 	}
 
@@ -84,7 +90,9 @@ class HomeController extends AbstractController {
 
 		$isBeforeCreation = $user->getCreatedAt() > $dateTime;
 
-		return new Response($this->twig->render('@TimeMachine/home/state.html.twig', [
+		return new Response($this->twig->render('@TimeMachine/entity/state.html.twig', [
+			'entity'           => $entity,
+			'id'               => $id,
 			'dateTime'         => $dateTime,
 			'data'             => $data,
 			'user'             => $user,
@@ -92,8 +100,8 @@ class HomeController extends AbstractController {
 		]));
 	}
 
-	#[Route('/time/{entity}/{id}/changes', name: 'time_machine_history', methods: ['GET'])]
-	public function history(string $entity, mixed $id, TimeMachine $timeMachine): Response {
+	#[Route('/time/{entity}/{id}/changes', name: 'time_machine_changes', methods: ['GET'])]
+	public function changes(string $entity, mixed $id, TimeMachine $timeMachine): Response {
 		$configuration = $this->containerBag->get('time_machine.configuration');
 
 		$entities = $configuration['entities'];
@@ -106,12 +114,14 @@ class HomeController extends AbstractController {
 
 		dump($histories);
 
-		return new Response($this->twig->render('@TimeMachine/home/history.html.twig', [
+		return new Response($this->twig->render('@TimeMachine/entity/changes.html.twig', [
+			'entity'    => $entity,
+			'id'        => $id,
 			'histories' => $histories
 		]));
 	}
 
-	#[Route('/time/{entity}/{id}/timeline', name: 'time_machine_timeline', requirements: ['id' => '\d+'], methods: ['GET'])]
+	#[Route('/time/{entity}/{id}/timeline', name: 'time_machine_timeline', methods: ['GET'])]
 	public function timeline(string $entity, mixed $id, ManagerRegistry $managerRegistry, TimeMachine $timeMachine): Response {
 		$entry = $managerRegistry->getRepository($entity)->find($id);
 
@@ -154,8 +164,9 @@ class HomeController extends AbstractController {
 			}
 		}
 
-		return new Response($this->twig->render('@TimeMachine/home/timeline.html.twig', [
+		return new Response($this->twig->render('@TimeMachine/entity/timeline.html.twig', [
 			'entity'     => $entity,
+			'id'         => $id,
 			'entry'      => $entry,
 			'properties' => $properties,
 			'histories'  => $histories,

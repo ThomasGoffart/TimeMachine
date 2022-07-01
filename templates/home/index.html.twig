@@ -1,26 +1,30 @@
 {% extends '@TimeMachine/base.html.twig' %}
 
 {% block body %}
-	<h1 class="display-6">Entities</h1>
+	<div class="d-flex">
+		<h1 class="display-6">Entities</h1>
+	</div>
+
+	<hr>
 
 	<table class="table align-middle small">
 		<thead>
 			<tr>
 				<th></th>
 				<th>{{ 'Name' | trans }}</th>
-				<th>{{ 'Entry Count' | trans }}</th>
+				<th>{{ 'Entry count' | trans }}</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for entity in entities %}
 				<tr>
 					<td class="w-1">
-						<a href="{{ url('time_machine_show', {entity: entity}) }}" class="btn btn-sm btn-primary w-100">
+						<a href="{{ url('time_machine_show', { entity: entity }) }}" class="btn btn-sm btn-primary w-100">
 							<i class="fa-solid fa-fw fa-magnifying-glass"></i>
 						</a>
 					</td>
 					<td>{{ entity }}</td>
-					<td>{{ 574 }}</td>
+					<td>{{ counts[entity] }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>

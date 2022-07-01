@@ -22,7 +22,6 @@
 			left: 50%;
 			transform: translate(-50%, -50%);
 			text-align: center;
-			background: #ffffff;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -30,17 +29,11 @@
 		}
 	</style>
 
-	<div class="d-flex align-items-center justify-content-between">
-		<h1 class="display-6">{{ entity }}</h1>
-		<a href="{{ url('time_machine_show', { entity: entity }) }}" class="btn btn-sm btn-primary">
-			<i class="fa-solid fa-arrow-left me-2"></i>
-			<span>{{ 'Back' | trans }}</span>
-		</a>
-	</div>
+	{% include '@TimeMachine/partials/navigation.html.twig' %}
 
-	<table class="table table-timeline text-nowrap">
+	<table class="table border table-timeline text-nowrap">
 		<thead>
-			<tr>
+			<tr class="bg-light">
 				<th>
 					<p>&nbsp;</p>
 					<p>&nbsp;</p>

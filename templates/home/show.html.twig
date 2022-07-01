@@ -9,6 +9,8 @@
 		</a>
 	</div>
 
+	<hr>
+
 	<div class="table-responsive">
 		<table class="table align-middle small text-truncate">
 			<thead>
@@ -26,7 +28,7 @@
 							<a href="{{ url('time_machine_state', { entity: entity, id: entry.id }) }}" class="btn btn-sm btn-primary">
 								<i class="fa-solid fa-fw fa-magnifying-glass"></i>
 							</a>
-							<a href="{{ url('time_machine_history', { entity: entity, id: entry.id }) }}" class="btn btn-sm btn-danger">
+							<a href="{{ url('time_machine_changes', { entity: entity, id: entry.id }) }}" class="btn btn-sm btn-danger">
 								<i class="fa-solid fa-fw fa-list-ol"></i>
 							</a>
 							<a href="{{ url('time_machine_timeline', { entity: entity, id: entry.id }) }}" class="btn btn-sm btn-success">
@@ -44,5 +46,7 @@
 		</table>
 	</div>
 
-	{{ knp_pagination_render(entries) }}
+	<div class="float-end">
+		{{ knp_pagination_render(entries) }}
+	</div>
 {% endblock %}
