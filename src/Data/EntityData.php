@@ -36,14 +36,14 @@ class EntityData {
 		foreach ($reflectionProperties as $reflectionProperty) {
 			$type = null;
 
-			$columnAttribute = $reflectionProperty->getAttributes(Column::class);
+			$columnAttributes = $reflectionProperty->getAttributes(Column::class);
 
-			if (count($columnAttribute) === 1) {
-				$type = $columnAttribute[0]->getArguments()['type'];
+			if (count($columnAttributes) === 1) {
+				$type = $columnAttributes[0]->getArguments()['type'];
 			} else {
-				$manyToOneAttribute = $reflectionProperty->getAttributes(ManyToOne::class);
+				$manyToOneAttributes = $reflectionProperty->getAttributes(ManyToOne::class);
 
-				if (count($manyToOneAttribute) === 1) {
+				if (count($manyToOneAttributes) === 1) {
 					$type = 'relation';
 				}
 			}

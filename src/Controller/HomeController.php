@@ -5,11 +5,14 @@ namespace NorthernIndustry\TimeMachineBundle\Controller;
 
 use DateTime;
 use Twig\Environment;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use NorthernIndustry\TimeMachineBundle\TimeMachine;
+use NorthernIndustry\TimeMachineBundle\Entity\Change;
 use NorthernIndustry\TimeMachineBundle\Data\EntityData;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -33,7 +36,7 @@ class HomeController extends AbstractController {
 	}
 
 	#[Route('/time/{entity}', name: 'time_machine_show', methods: ['GET'])]
-	public function show(string $entity, ManagerRegistry $managerRegistry): Response {
+	public function show(string $entity, EntityManagerInterface $entityManager, Request $request, PaginatorInterface $paginator): Response {
 		$configuration = $this->containerBag->get('time_machine.configuration');
 
 		$entities = $configuration['entities'];
@@ -42,7 +45,8 @@ class HomeController extends AbstractController {
 			throw new NotFoundHttpException();
 		}
 
-		$entries = $managerRegistry->getRepository($entity)->findAll();
+		$query = $entityManager->createQuery("SELECT u FROM $entity u ORDER BY u.id");
+		$entries = $paginator->paginate($query, $request->query->get('page', 1), 10);
 
 		$data = EntityData::find($entries[0]);
 
@@ -104,6 +108,60 @@ class HomeController extends AbstractController {
 
 		return new Response($this->twig->render('@TimeMachine/home/history.html.twig', [
 			'histories' => $histories
+		]));
+	}
+
+	#[Route('/time/{entity}/{id}/timeline', name: 'time_machine_timeline', requirements: ['id' => '\d+'], methods: ['GET'])]
+	public function timeline(string $entity, mixed $id, ManagerRegistry $managerRegistry, TimeMachine $timeMachine): Response {
+		$entry = $managerRegistry->getRepository($entity)->find($id);
+
+		$properties = EntityData::find($entry)->getProperties();
+		$histories = $timeMachine->getHistories($entry);
+
+		dump($properties, $histories);
+
+		$values = [];
+		$offsets = [];
+
+		$allChanges = [];
+
+		foreach ($histories as $history) {
+			foreach ($history->getChanges() as $change) {
+				$allChanges[$change->getId()] = $change;
+			}
+		}
+
+		foreach ($properties as $property) {
+
+			foreach ($histories as $history) {
+				$propertyName = $property->getName();
+
+				$change = $history->getChanges()
+				                  ->filter(fn(Change $change) => $change->getProperty() === $propertyName)
+				                  ->last();
+
+				if (!isset($offsets[$propertyName])) {
+					$offsets[$propertyName] = 0;
+				}
+
+				++$offsets[$propertyName];
+
+				if ($change) {
+					$values[$propertyName][$change->getId()] = $offsets[$propertyName];
+
+					$offsets[$propertyName] = 0;
+				}
+			}
+		}
+
+		return new Response($this->twig->render('@TimeMachine/home/timeline.html.twig', [
+			'entity'     => $entity,
+			'entry'      => $entry,
+			'properties' => $properties,
+			'histories'  => $histories,
+			'changes'    => $allChanges,
+			'values'     => $values,
+			'offsets'    => $offsets
 		]));
 	}
 

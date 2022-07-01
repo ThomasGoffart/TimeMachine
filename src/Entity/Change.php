@@ -30,7 +30,7 @@ class Change {
 
 	private ?string $type = null;
 
-	public ?DateTimeInterface $startAt = null;
+	public ?DateTimeInterface $startsAt = null;
 
 	public ?DateTimeInterface $endsAt = null;
 
@@ -88,12 +88,12 @@ class Change {
 		return $this;
 	}
 
-	public function getStartAt(): ?DateTimeInterface {
-		return $this->startAt;
+	public function getStartsAt(): ?DateTimeInterface {
+		return $this->startsAt;
 	}
 
-	public function setStartAt(?DateTimeInterface $startAt): void {
-		$this->startAt = $startAt;
+	public function setStartsAt(?DateTimeInterface $startsAt): void {
+		$this->startsAt = $startsAt;
 	}
 
 	public function getEndsAt(): ?DateTimeInterface {

@@ -1,0 +1,96 @@
+{% extends '@TimeMachine/base.html.twig' %}
+
+{% block body %}
+	<style>
+		.table-timeline.table td, .table th {
+			width: 200px;
+		}
+
+		.table-timeline.table tbody tr td:not(:last-child) {
+			border-right: 1px solid #dee2e6;
+		}
+
+		.table-timeline .text {
+			width: 0 !important;
+			padding: 0 !important;
+			position: relative;
+		}
+
+		.table-timeline .text div {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			text-align: center;
+			background: #ffffff;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			height: 100%;
+		}
+	</style>
+
+	<div class="d-flex align-items-center justify-content-between">
+		<h1 class="display-6">{{ entity }}</h1>
+		<a href="{{ url('time_machine_show', { entity: entity }) }}" class="btn btn-sm btn-primary">
+			<i class="fa-solid fa-arrow-left me-2"></i>
+			<span>{{ 'Back' | trans }}</span>
+		</a>
+	</div>
+
+	<table class="table table-timeline text-nowrap">
+		<thead>
+			<tr>
+				<th>
+					<p>&nbsp;</p>
+					<p>&nbsp;</p>
+				</th>
+				<th class="text">
+					<div>
+						<p>{{ entry.createdAt | date_format }}</p>
+						<small>{{ entry.createdAt | time_format }}</small>
+					</div>
+				</th>
+				<th></th>
+				{% for history in histories %}
+					<th class="text">
+						<div>
+							<p>{{ history.createdAt | date_format }}</p>
+							<small>{{ history.createdAt | time_format }}</small>
+						</div>
+					</th>
+					<th></th>
+				{% endfor %}
+				<th class="text">
+					<div>
+						<p>{{ 'now' | date('Y-m-d H:i:s') | date_format }}</p>
+						<small>{{ 'now' | date('Y-m-d H:i:s') | time_format }}</small>
+					</div>
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for property in properties %}
+				<tr>
+					<td class="w-1 text-end">
+						<b title="{{ property.type | default('Entity') | humanize | trans }}">{{ property.name | humanize | trans }}</b>
+					</td>
+
+					{% for key, value in (values[property.name] ?? []) %}
+						<td colspan="{{ value * 2 }}" class="overflow-auto text-center">{{ changes[key].before | readable(property.type) | raw }}</td>
+					{% endfor %}
+
+					<td colspan="{{ (offsets[property.name] | default(0) * 2) + 2 }}" class="overflow-auto text-center">
+						<div>{{ attribute(entry, property.name) | readable(property.type) | raw }}</div>
+					</td>
+
+					<td colspan="2" class="w-1">
+						<b title="{{ property.type | default('Entity') | humanize | trans }}">{{ property.name | humanize | trans }}</b>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}
+
